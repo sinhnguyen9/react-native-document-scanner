@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   DeviceEventEmitter,
   findNodeHandle,
@@ -56,95 +56,116 @@ interface PdfScannerProps {
   useBase64?: boolean;
   saveInAppDocument?: boolean;
   captureMultiple?: boolean;
+  navigation?: any;
 }
 
-class PdfScanner extends React.Component<PdfScannerProps> {
-  sendOnPictureTakenEvent (event: any) {
-    if (!this.props.onPictureTaken) return null
-    return this.props.onPictureTaken(event.nativeEvent)
+function PdfScanner (props: PdfScannerProps) {
+
+  const sendOnPictureTakenEvent =(event: any)=> {
+    if (!props.onPictureTaken) return null
+    return props.onPictureTaken(event.nativeEvent)
   }
 
-  sendOnRectangleDetectEvent (event: any) {
-    if (!this.props.onRectangleDetect) return null
-    return this.props.onRectangleDetect(event.nativeEvent)
+  const sendOnRectangleDetectEvent =(event: any)=> {
+    if (!props.onRectangleDetect) return null
+    return props.onRectangleDetect(event.nativeEvent)
   }
 
-  getImageQuality () {
-    if (!this.props.quality) return 0.8
-    if (this.props.quality > 1) return 1
-    if (this.props.quality < 0.1) return 0.1
-    return this.props.quality
+  const getImageQuality =()=> {
+    if (!props.quality) return 0.8
+    if (props.quality > 1) return 1
+    if (props.quality < 0.1) return 0.1
+    return props.quality
   }
 
-  componentDidMount () {
+  useEffect(()=>{
     if (Platform.OS === 'android') {
-      const { onPictureTaken, onProcessing } = this.props
-      if (onPictureTaken) DeviceEventEmitter.addListener('onPictureTaken', onPictureTaken)
-      if (onProcessing) DeviceEventEmitter.addListener('onProcessingChange', onProcessing)
-    }
-  }
-
-  componentDidUpdate(prevProps: PdfScannerProps) {
-    if (Platform.OS === 'android') {
-      if (this.props.onPictureTaken !== prevProps.onPictureTaken) {
-        if (prevProps.onPictureTaken)
-          DeviceEventEmitter.removeListener('onPictureTaken', prevProps.onPictureTaken)
-        if (this.props.onPictureTaken)
-          DeviceEventEmitter.addListener('onPictureTaken', this.props.onPictureTaken)
+      const { onPictureTaken, onProcessing } = props
+      if (onPictureTaken) {
+        var subscriptionPicture = DeviceEventEmitter.addListener('onPictureTaken', onPictureTaken)
       }
-      if (this.props.onProcessing !== prevProps.onProcessing) {
-        if (prevProps.onProcessing)
-          DeviceEventEmitter.removeListener('onProcessingChange', prevProps.onProcessing)
-        if (this.props.onProcessing)
-          DeviceEventEmitter.addListener('onProcessingChange', this.props.onProcessing)
+      if (onProcessing) {
+        var subscriptionProcess= DeviceEventEmitter.addListener('onProcessingChange', onProcessing)}
+    }
+    return ()=>{
+      if (Platform.OS === 'android') {
+        const { onPictureTaken, onProcessing } = props
+        if (onPictureTaken) subscriptionPicture.removeListener('onPictureTaken', onPictureTaken)
+        if (onProcessing) subscriptionProcess.removeListener('onProcessingChange', onProcessing)
       }
     }
-  }
+  },[props.onPictureTaken, props.onProcessing])
 
-  componentWillUnmount () {
-    if (Platform.OS === 'android') {
-      const { onPictureTaken, onProcessing } = this.props
-      if (onPictureTaken) DeviceEventEmitter.removeListener('onPictureTaken', onPictureTaken)
-      if (onProcessing) DeviceEventEmitter.removeListener('onProcessingChange', onProcessing)
+  // componentDidMount () {
+  //   if (Platform.OS === 'android') {
+  //     const { onPictureTaken, onProcessing } = this.props
+  //     if (onPictureTaken) {
+  //       onPictureTakenListener = DeviceEventEmitter.addListener('onPictureTaken', onPictureTaken)
+  //     }
+  //     if (onProcessing) DeviceEventEmitter.addListener('onProcessingChange', onProcessing)
+  //   }
+  // }
+
+  // componentDidUpdate(prevProps: PdfScannerProps) {
+  //   if (Platform.OS === 'android') {
+  //     if (this.props.onPictureTaken !== prevProps.onPictureTaken) {
+  //       if (prevProps.onPictureTaken)
+  //         DeviceEventEmitter.removeListener('onPictureTaken', prevProps.onPictureTaken)
+  //       if (this.props.onPictureTaken)
+  //         DeviceEventEmitter.addListener('onPictureTaken', this.props.onPictureTaken)
+  //     }
+  //     if (this.props.onProcessing !== prevProps.onProcessing) {
+  //       if (prevProps.onProcessing)
+  //         DeviceEventEmitter.removeListener('onProcessingChange', prevProps.onProcessing)
+  //       if (this.props.onProcessing)
+  //         DeviceEventEmitter.addListener('onProcessingChange', this.props.onProcessing)
+  //     }
+  //   }
+  // }
+
+  // componentWillUnmount () {
+  //   if (Platform.OS === 'android') {
+  //     const { onPictureTaken, onProcessing } = this.props
+  //     if (onPictureTaken) DeviceEventEmitter.removeListener('onPictureTaken', onPictureTaken)
+  //     if (onProcessing) DeviceEventEmitter.removeListener('onProcessingChange', onProcessing)
+  //   }
+  // }
+
+  const capture =()=> {
+    if (_scannerHandle) {
+      ScannerManager.capture(_scannerHandle)
     }
   }
 
-  capture () {
-    if (this._scannerHandle) {
-      ScannerManager.capture(this._scannerHandle)
-    }
-  }
-
-  _scannerRef: any = null;
-  _scannerHandle: number | null = null;
-  _setReference = (ref: any) => {
+  let _scannerRef: any = null;
+  let _scannerHandle: number | null = null;
+  let _setReference = (ref: any) => {
     if (ref) {
-      this._scannerRef = ref
-      this._scannerHandle = findNodeHandle(ref)
+      _scannerRef = ref
+      _scannerHandle = findNodeHandle(ref)
     } else {
-      this._scannerRef = null
-      this._scannerHandle = null
+      _scannerRef = null
+      _scannerHandle = null
     }
   };
 
-  render () {
+  
     return (
       <RNPdfScanner
-        ref={this._setReference}
-        {...this.props}
-        onPictureTaken={this.sendOnPictureTakenEvent.bind(this)}
-        onRectangleDetect={this.sendOnRectangleDetectEvent.bind(this)}
-        useFrontCam={this.props.useFrontCam || false}
-        brightness={this.props.brightness || 0}
-        saturation={this.props.saturation || 1}
-        contrast={this.props.contrast || 1}
-        quality={this.getImageQuality()}
-        detectionCountBeforeCapture={this.props.detectionCountBeforeCapture || 5}
-        durationBetweenCaptures={this.props.durationBetweenCaptures || 0}
-        detectionRefreshRateInMS={this.props.detectionRefreshRateInMS || 50}
+        ref={_setReference}
+        {...props}
+        onPictureTaken={(event: any)=>sendOnPictureTakenEvent(event)}
+        onRectangleDetect={(event: any)=>sendOnRectangleDetectEvent(event)}
+        useFrontCam={props.useFrontCam || false}
+        brightness={props.brightness || 0}
+        saturation={props.saturation || 1}
+        contrast={props.contrast || 1}
+        quality={()=>getImageQuality()}
+        detectionCountBeforeCapture={props.detectionCountBeforeCapture || 5}
+        durationBetweenCaptures={props.durationBetweenCaptures || 0}
+        detectionRefreshRateInMS={props.detectionRefreshRateInMS || 50}
       />
     )
-  }
 }
 
-export default PdfScanner
+export default React.memo(PdfScanner)
