@@ -5,7 +5,8 @@ import {
   NativeModules,
   Platform,
   requireNativeComponent,
-  ViewStyle } from 'react-native'
+  ViewStyle
+} from 'react-native'
 
 const RNPdfScanner = requireNativeComponent('RNPdfScanner')
 const ScannerManager: any = NativeModules.RNPdfScannerManager
@@ -84,19 +85,23 @@ class PdfScanner extends React.Component<PdfScannerProps> {
     }
   }
 
-  componentDidUpdate(prevProps: PdfScannerProps) {
+  componentDidUpdate (prevProps: PdfScannerProps) {
     if (Platform.OS === 'android') {
       if (this.props.onPictureTaken !== prevProps.onPictureTaken) {
-        if (prevProps.onPictureTaken)
+        if (prevProps.onPictureTaken) {
           DeviceEventEmitter.removeListener('onPictureTaken', prevProps.onPictureTaken)
-        if (this.props.onPictureTaken)
+        }
+        if (this.props.onPictureTaken) {
           DeviceEventEmitter.addListener('onPictureTaken', this.props.onPictureTaken)
+        }
       }
       if (this.props.onProcessing !== prevProps.onProcessing) {
-        if (prevProps.onProcessing)
+        if (prevProps.onProcessing) {
           DeviceEventEmitter.removeListener('onProcessingChange', prevProps.onProcessing)
-        if (this.props.onProcessing)
+        }
+        if (this.props.onProcessing) {
           DeviceEventEmitter.addListener('onProcessingChange', this.props.onProcessing)
+        }
       }
     }
   }
@@ -115,8 +120,8 @@ class PdfScanner extends React.Component<PdfScannerProps> {
     }
   }
 
-  _scannerRef: any = null;
-  _scannerHandle: number | null = null;
+  _scannerRef: any = null
+  _scannerHandle: number | null = null
   _setReference = (ref: any) => {
     if (ref) {
       this._scannerRef = ref
@@ -125,7 +130,7 @@ class PdfScanner extends React.Component<PdfScannerProps> {
       this._scannerRef = null
       this._scannerHandle = null
     }
-  };
+  }
 
   render () {
     return (
