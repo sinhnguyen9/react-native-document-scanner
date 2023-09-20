@@ -562,7 +562,7 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mWaitSpinner.setVisibility(View.VISIBLE);
+                mWaitSpinner.setVisibility(View.INVISIBLE);
                 WritableMap data = new WritableNativeMap();
                 data.putBoolean("processing", true);
                 mThis.processingListener.onProcessingChange(data);
