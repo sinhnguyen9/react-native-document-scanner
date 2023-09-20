@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CameraDeviceController.h"
 
 typedef NS_ENUM(NSInteger,IPDFCameraViewType)
 {
@@ -27,7 +28,7 @@ typedef NS_ENUM(NSInteger, IPDFRectangeType)
 
 @end
 
-@interface IPDFCameraViewController : UIView
+@interface IPDFCameraViewController : CameraDeviceController
 
 - (void)setupCameraView;
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18C7926C2ABAF12600AB282A /* CameraDeviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C7926B2ABAF12600AB282A /* CameraDeviceController.m */; };
 		D2EF80001EFD1111008AB871 /* DocumentScannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EF7FFD1EFD1111008AB871 /* DocumentScannerView.m */; };
 		D2EF80011EFD1111008AB871 /* IPDFCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EF7FFF1EFD1111008AB871 /* IPDFCameraViewController.m */; };
 		D2EF803F1EFD1803008AB871 /* RNPdfScannerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EF803E1EFD1803008AB871 /* RNPdfScannerManager.m */; };
@@ -26,6 +27,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNPdfScanner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNPdfScanner.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		18C7926A2ABAF07900AB282A /* CameraDeviceController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CameraDeviceController.h; sourceTree = "<group>"; };
+		18C7926B2ABAF12600AB282A /* CameraDeviceController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraDeviceController.m; sourceTree = "<group>"; };
 		D2EF7FFC1EFD1111008AB871 /* DocumentScannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentScannerView.h; sourceTree = "<group>"; };
 		D2EF7FFD1EFD1111008AB871 /* DocumentScannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentScannerView.m; sourceTree = "<group>"; };
 		D2EF7FFE1EFD1111008AB871 /* IPDFCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPDFCameraViewController.h; sourceTree = "<group>"; };
@@ -56,6 +59,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				18C7926B2ABAF12600AB282A /* CameraDeviceController.m */,
+				18C7926A2ABAF07900AB282A /* CameraDeviceController.h */,
 				D2EF803D1EFD1803008AB871 /* RNPdfScannerManager.h */,
 				D2EF803E1EFD1803008AB871 /* RNPdfScannerManager.m */,
 				D2EF7FFC1EFD1111008AB871 /* DocumentScannerView.h */,
@@ -105,6 +110,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
@@ -122,6 +128,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18C7926C2ABAF12600AB282A /* CameraDeviceController.m in Sources */,
 				D2EF803F1EFD1803008AB871 /* RNPdfScannerManager.m in Sources */,
 				D2EF80001EFD1111008AB871 /* DocumentScannerView.m in Sources */,
 				D2EF80011EFD1111008AB871 /* IPDFCameraViewController.m in Sources */,
