@@ -59,8 +59,8 @@ interface PdfScannerProps {
 }
 
 class PdfScanner extends React.Component<PdfScannerProps> {
-  picSubscription: any;
-  processSubscription: any;
+  _picSubscription: any = null;
+  _processSubscription: any = null;
   
   sendOnPictureTakenEvent (event: any) {
     if (!this.props.onPictureTaken) return null
@@ -83,9 +83,9 @@ class PdfScanner extends React.Component<PdfScannerProps> {
     if (Platform.OS === 'android') {
       const { onPictureTaken, onProcessing } = this.props
       if (onPictureTaken) 
-        this.picSubscription = DeviceEventEmitter.addListener('onPictureTaken', onPictureTaken)
+        this._picSubscription = DeviceEventEmitter.addListener('onPictureTaken', onPictureTaken)
       if (onProcessing) 
-        this.processSubscription = DeviceEventEmitter.addListener('onProcessingChange', onProcessing)
+        this._processSubscription = DeviceEventEmitter.addListener('onProcessingChange', onProcessing)
     }
   }
 
@@ -93,15 +93,15 @@ class PdfScanner extends React.Component<PdfScannerProps> {
     if (Platform.OS === 'android') {
       if (this.props.onPictureTaken !== prevProps.onPictureTaken) {
         if (prevProps.onPictureTaken)
-          this.picSubscription.remove();
+          this._picSubscription.remove();
         if (this.props.onPictureTaken)
-          this.picSubscription = DeviceEventEmitter.addListener('onPictureTaken', this.props.onPictureTaken)
+          this._picSubscription = DeviceEventEmitter.addListener('onPictureTaken', this.props.onPictureTaken)
       }
       if (this.props.onProcessing !== prevProps.onProcessing) {
         if (prevProps.onProcessing)
-          this.processSubscription.remove()
+          this._processSubscription.remove()
         if (this.props.onProcessing)
-          this.processSubscription = DeviceEventEmitter.addListener('onProcessingChange', this.props.onProcessing)
+          this._processSubscription = DeviceEventEmitter.addListener('onProcessingChange', this.props.onProcessing)
       }
     }
   }
@@ -109,8 +109,8 @@ class PdfScanner extends React.Component<PdfScannerProps> {
   componentWillUnmount () {
     if (Platform.OS === 'android') {
       const { onPictureTaken, onProcessing } = this.props
-      if (onPictureTaken)  this.picSubscription.remove();
-      if (onProcessing) this.processSubscription.remove()
+      if (onPictureTaken)  this._picSubscription.remove();
+      if (onProcessing) this._processSubscription.remove()
     }
   }
 
