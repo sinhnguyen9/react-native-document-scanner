@@ -95,7 +95,62 @@
 
 - (void)setupCameraView
 {
-    [super setupCameraView];
+    [self createGLKView];
+
+    AVCaptureDevice *device = nil;
+    NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+    for (AVCaptureDevice *possibleDevice in devices) {
+        if (self.useFrontCam) {
+            if ([possibleDevice position] == AVCaptureDevicePositionFront) {
+                device = possibleDevice;
+            }
+        } else {
+            if ([possibleDevice position] != AVCaptureDevicePositionFront) {
+                device = [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
+            }
+        }
+    }
+    if (!device) return;
+
+    self.imageDetectionConfidence = 0.0;
+
+    AVCaptureSession *session = [[AVCaptureSession alloc] init];
+    self.captureSession = session;
+    [session beginConfiguration];
+    self.captureDevice = device;
+
+    NSError *error = nil;
+    AVCaptureDeviceInput* input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+    session.sessionPreset = AVCaptureSessionPresetPhoto;
+    [session addInput:input];
+
+    AVCaptureVideoDataOutput *dataOutput = [[AVCaptureVideoDataOutput alloc] init];
+    [dataOutput setAlwaysDiscardsLateVideoFrames:YES];
+    [dataOutput setVideoSettings:@{(id)kCVPixelBufferPixelFormatTypeKey:@(kCVPixelFormatType_32BGRA)}];
+    [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    [session addOutput:dataOutput];
+
+    self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+    [session addOutput:self.stillImageOutput];
+
+    AVCaptureConnection *connection = [dataOutput.connections firstObject];
+    [connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
+
+    if (device.isFlashAvailable)
+    {
+        [device lockForConfiguration:nil];
+        [device setFlashMode:AVCaptureFlashModeOff];
+        [device unlockForConfiguration];
+
+        if ([device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus])
+        {
+            [device lockForConfiguration:nil];
+            [device setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+            [device unlockForConfiguration];
+        }
+    }
+
+    [session commitConfiguration];
 }
 
 - (void)setCameraViewType:(IPDFCameraViewType)cameraViewType
@@ -207,25 +262,25 @@
     [self hideGLKView:YES completion:nil];
 }
 
-//- (void)setEnableTorch:(BOOL)enableTorch
-//{
-//    _enableTorch = enableTorch;
-//
-//    AVCaptureDevice *device = self.captureDevice;
-//    if ([device hasTorch] && [device hasFlash])
-//    {
-//        [device lockForConfiguration:nil];
-//        if (enableTorch)
-//        {
-//            [device setTorchMode:AVCaptureTorchModeOn];
-//        }
-//        else
-//        {
-//            [device setTorchMode:AVCaptureTorchModeOff];
-//        }
-//        [device unlockForConfiguration];
-//    }
-//}
+- (void)setEnableTorch:(BOOL)enableTorch
+{
+    _enableTorch = enableTorch;
+
+    AVCaptureDevice *device = self.captureDevice;
+    if ([device hasTorch] && [device hasFlash])
+    {
+        [device lockForConfiguration:nil];
+        if (enableTorch)
+        {
+            [device setTorchMode:AVCaptureTorchModeOn];
+        }
+        else
+        {
+            [device setTorchMode:AVCaptureTorchModeOff];
+        }
+        [device unlockForConfiguration];
+    }
+}
 
 - (void)setUseFrontCam:(BOOL)useFrontCam
 {
