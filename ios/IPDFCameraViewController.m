@@ -22,14 +22,7 @@
 @property (nonatomic,strong) AVCaptureDevice *captureDevice;
 @property (nonatomic,strong) EAGLContext *context;
 
-//@property (nonatomic, strong) AVCaptureStillImageOutput* stillImageOutput;
-
-/*!
- @property cameraOutput
- @abstract
- Used for image capture output
- */
-@property (nonatomic, strong) AVCapturePhotoOutput *cameraOutput;
+@property (nonatomic, strong) AVCaptureStillImageOutput* stillImageOutput;
 
 @property (nonatomic, assign) BOOL forceStop;
 @property (nonatomic, assign) float lastDetectionRate;
@@ -100,6 +93,32 @@
     [EAGLContext setCurrentContext:self.context];
 }
 
+/*!
+ Sets the current capture session output orientation to the device's orientation
+ */
+- (void)setVideoOrientation {
+  UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+  AVCaptureVideoOrientation videoOrientation;
+  switch (orientation) {
+    case UIInterfaceOrientationPortrait:
+      videoOrientation = AVCaptureVideoOrientationPortrait;
+      break;
+    case UIInterfaceOrientationPortraitUpsideDown:
+      videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+      break;
+    case UIInterfaceOrientationLandscapeLeft:
+      videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
+      break;
+    case UIInterfaceOrientationLandscapeRight:
+      videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+      break;
+    default:
+      videoOrientation = AVCaptureVideoOrientationPortrait;
+  }
+
+  [[[self.captureSession.outputs firstObject].connections firstObject] setVideoOrientation:videoOrientation];
+}
+
 - (void)setupCameraView
 {
     [self createGLKView];
@@ -139,8 +158,8 @@
     [session addOutput:dataOutput];
 
     // Output session capture to still image output
-    self.cameraOutput = [[AVCapturePhotoOutput alloc] init];
-    [session addOutput:self.cameraOutput];
+    self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
+    [session addOutput:self.stillImageOutput];
 
     AVCaptureConnection *connection = [dataOutput.connections firstObject];
     [connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
@@ -158,6 +177,9 @@
             [device unlockForConfiguration];
         }
     }
+    
+    // Correct the orientation of the output
+    [self setVideoOrientation];
 
     [session commitConfiguration];
 }
@@ -372,7 +394,7 @@
     }];
 
     AVCaptureConnection *videoConnection = nil;
-    for (AVCaptureConnection *connection in self.cameraOutput.connections)
+    for (AVCaptureConnection *connection in self.stillImageOutput.connections)
     {
         for (AVCaptureInputPort *port in [connection inputPorts])
         {
@@ -385,9 +407,9 @@
         if (videoConnection) break;
     }
 
-    [self.cameraOutput captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error)
+    [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error)
      {
-        NSData *imageData = [AVCapturePhotoOutput JPEGPhotoDataRepresentationForJPEGSampleBuffer:imageSampleBuffer previewPhotoSampleBuffer:previewPhotoSampleBuffer];
+        NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
 
          if (weakSelf.cameraViewType == IPDFCameraViewTypeBlackAndWhite || weakSelf.isBorderDetectionEnabled)
          {
