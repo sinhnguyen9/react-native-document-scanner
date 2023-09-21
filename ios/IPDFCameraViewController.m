@@ -105,9 +105,10 @@
                 device = possibleDevice;
             }
         } else {
-            if ([possibleDevice position] != AVCaptureDevicePositionFront) {
-                device = [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
-            }
+//            if ([possibleDevice position] != AVCaptureDevicePositionFront) {
+//                device = possibleDevice;
+//            }
+            device = [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
         }
     }
     if (!device) return;
