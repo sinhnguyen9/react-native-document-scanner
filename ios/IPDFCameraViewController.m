@@ -22,7 +22,14 @@
 @property (nonatomic,strong) AVCaptureDevice *captureDevice;
 @property (nonatomic,strong) EAGLContext *context;
 
-@property (nonatomic, strong) AVCaptureStillImageOutput* stillImageOutput;
+//@property (nonatomic, strong) AVCaptureStillImageOutput* stillImageOutput;
+
+/*!
+ @property cameraOutput
+ @abstract
+ Used for image capture output
+ */
+@property (nonatomic, strong) AVCapturePhotoOutput *cameraOutput;
 
 @property (nonatomic, assign) BOOL forceStop;
 @property (nonatomic, assign) float lastDetectionRate;
@@ -131,8 +138,9 @@
     [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
     [session addOutput:dataOutput];
 
-    self.stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-    [session addOutput:self.stillImageOutput];
+    // Output session capture to still image output
+    self.cameraOutput = [[AVCapturePhotoOutput alloc] init];
+    [session addOutput:self.cameraOutput];
 
     AVCaptureConnection *connection = [dataOutput.connections firstObject];
     [connection setVideoOrientation:AVCaptureVideoOrientationPortrait];
@@ -364,7 +372,7 @@
     }];
 
     AVCaptureConnection *videoConnection = nil;
-    for (AVCaptureConnection *connection in self.stillImageOutput.connections)
+    for (AVCaptureConnection *connection in self.cameraOutput.connections)
     {
         for (AVCaptureInputPort *port in [connection inputPorts])
         {
@@ -377,9 +385,9 @@
         if (videoConnection) break;
     }
 
-    [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error)
+    [self.cameraOutput captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error)
      {
-         NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
+        NSData *imageData = [AVCapturePhotoOutput JPEGPhotoDataRepresentationForJPEGSampleBuffer:imageSampleBuffer previewPhotoSampleBuffer:previewPhotoSampleBuffer];
 
          if (weakSelf.cameraViewType == IPDFCameraViewTypeBlackAndWhite || weakSelf.isBorderDetectionEnabled)
          {
