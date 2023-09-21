@@ -105,10 +105,9 @@
                 device = possibleDevice;
             }
         } else {
-//            if ([possibleDevice position] != AVCaptureDevicePositionFront) {
-//                device = possibleDevice;
-//            }
-            device = [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
+            if ([possibleDevice position] != AVCaptureDevicePositionFront) {
+                device = possibleDevice;
+            }
         }
     }
     if (!device) return;
@@ -116,6 +115,7 @@
     self.imageDetectionConfidence = 0.0;
 
     AVCaptureSession *session = [[AVCaptureSession alloc] init];
+    session.sessionPreset = AVCaptureSessionPresetHigh;
     self.captureSession = session;
     [session beginConfiguration];
     self.captureDevice = device;
