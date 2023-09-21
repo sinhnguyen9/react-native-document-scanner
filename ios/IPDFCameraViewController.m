@@ -207,25 +207,25 @@
     [self hideGLKView:YES completion:nil];
 }
 
-- (void)setEnableTorch:(BOOL)enableTorch
-{
-    _enableTorch = enableTorch;
-
-    AVCaptureDevice *device = self.captureDevice;
-    if ([device hasTorch] && [device hasFlash])
-    {
-        [device lockForConfiguration:nil];
-        if (enableTorch)
-        {
-            [device setTorchMode:AVCaptureTorchModeOn];
-        }
-        else
-        {
-            [device setTorchMode:AVCaptureTorchModeOff];
-        }
-        [device unlockForConfiguration];
-    }
-}
+//- (void)setEnableTorch:(BOOL)enableTorch
+//{
+//    _enableTorch = enableTorch;
+//
+//    AVCaptureDevice *device = self.captureDevice;
+//    if ([device hasTorch] && [device hasFlash])
+//    {
+//        [device lockForConfiguration:nil];
+//        if (enableTorch)
+//        {
+//            [device setTorchMode:AVCaptureTorchModeOn];
+//        }
+//        else
+//        {
+//            [device setTorchMode:AVCaptureTorchModeOff];
+//        }
+//        [device unlockForConfiguration];
+//    }
+//}
 
 - (void)setUseFrontCam:(BOOL)useFrontCam
 {
