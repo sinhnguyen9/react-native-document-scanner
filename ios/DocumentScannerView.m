@@ -17,7 +17,9 @@
 - (void) didDetectRectangle:(CIRectangleFeature *)rectangle withType:(IPDFRectangeType)type {
     switch (type) {
         case IPDFRectangeTypeGood:
-            self.stableCounter ++;
+            if(self.openCamera){
+                self.stableCounter ++;
+            }
             break;
         default:
             self.stableCounter = 0;
@@ -33,6 +35,10 @@
         self.stableCounter = 0;
         [self capture];
     }
+}
+
+- (void) stopManually {
+    [self stop];
 }
 
 - (void) capture {
