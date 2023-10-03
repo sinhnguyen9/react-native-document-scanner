@@ -28,7 +28,6 @@ RCT_EXPORT_VIEW_PROPERTY(useFrontCam, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(useBase64, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(saveInAppDocument, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(captureMultiple, BOOL)
-RCT_EXPORT_VIEW_PROPERTY(openCamera, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(detectionCountBeforeCapture, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(durationBetweenCaptures, double)
 RCT_EXPORT_VIEW_PROPERTY(detectionRefreshRateInMS, NSInteger)
@@ -47,10 +46,6 @@ RCT_EXPORT_METHOD(capture:(nonnull NSNumber *)reactTag)
             [view capture];
         }
     }];
-}
-    
-RCT_EXPORT_METHOD(stopManually) {
-    [_scannerView stopManually];
 }
 
 - (UIView*) view {

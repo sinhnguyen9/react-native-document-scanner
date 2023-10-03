@@ -66,7 +66,6 @@
 
 - (void)dealloc
 {
-    NSLog(@"RUN dealloc ====> ");
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -92,7 +91,6 @@
 - (void)setupCameraView
 {
     //    if (_isStopped) {
-    NSLog(@"RUN setupCameraView ====> ");
     [self createGLKView];
     
     AVCaptureDevice *device = nil;
@@ -171,11 +169,8 @@
 
 -(void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
-    //    NSLog(@"RUN 172 ====> @");
     if (self.forceStop) return;
-    //    NSLog(@"RUN 174 after ====> @");
     if (_isStopped || _isCapturing || !CMSampleBufferIsValid(sampleBuffer)) return;
-    //    NSLog(@"RUN 176 ====> @");
     CVPixelBufferRef pixelBuffer = (CVPixelBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
     
     CIImage *image = [CIImage imageWithCVPixelBuffer:pixelBuffer];
@@ -255,7 +250,6 @@
 
 - (void)stop
 {
-    NSLog(@"RUN STOP SESSION ====> ");
     _isStopped = YES;
     
     [self.captureSession stopRunning];
@@ -287,8 +281,6 @@
 
 - (void)setUseFrontCam:(BOOL)useFrontCam
 {
-    NSLog(@"setUseFrontCam ====> ");
-    NSLog(_isStopped ? @"_isStopped 293 ====> Yes" : @"_isStopped 293 ====> No");
     _useFrontCam = useFrontCam;
     if (!_isStopped) {
         [self stop];
@@ -371,56 +363,19 @@
 
 - (void)captureImageWithCompletionHander:(void(^)(id data, id initialData, CIRectangleFeature *rectangleFeature))completionHandler
 {
-    NSLog(_isStopped ? @"_isStopped 375 ====> Yes" : @"_isStopped 375 ====> No");
     if (!_isStopped) {
         
-        NSLog(_isStopped ? @"_isStopped 377 ====> Yes" : @"_isStopped 377 ====> No");
         if (_isCapturing) return;
-        NSLog(_isStopped ? @"_isStopped 381 ====> Yes" : @"_isStopped 381 ====> No");
-        UIActivityIndicatorView *activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        activityIndicator.alpha = 1.0;
-        activityIndicator.color = UIColor.greenColor;
-        [self addSubview:activityIndicator];
-        activityIndicator.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
-        [activityIndicator startAnimating];//to start animating
-        
-        
         __weak typeof(self) weakSelf = self;
         
-        //        [weakSelf hideGLKView:YES completion:^
-        //        {
-        //            [weakSelf hideGLKView:NO completion:^
-        //            {
-        //                [weakSelf hideGLKView:YES completion:nil];
-        //            }];
-        //        }];
-        
         _isCapturing = YES;
-        NSLog(@"RUN 232323 ====> %d", _isCapturing);
-        NSLog(@"RUN 232323 ====> %@", videoConnection);
-        //        if (videoConnection) {
-        ////            self.openCamera = YES;
-        ////            self.stableCounter = 0;
-        //            [activityIndicator stopAnimating];//to stop animating
-        //            if (!_isStopped) {
-        //                [self stop];
-        //                [self setupCameraView];
-        //                [self start];
-        //            }
-        //            return;
-        //        }
-        NSLog(@"RUN 77777 ====> ");
         if (!videoConnection) {
-            NSLog(@"RUN 8888 ====> %@", videoConnection);
             for (AVCaptureConnection *connection in self.stillImageOutput.connections)
             {
-                NSLog(@"RUN 999 ====> ");
                 for (AVCaptureInputPort *port in [connection inputPorts])
                 {
-                    NSLog(@"RUN 101010 ====> ");
                     if ([[port mediaType] isEqual:AVMediaTypeVideo] )
                     {
-                        NSLog(@"RUN 121212 ====> ");
                         videoConnection = connection;
                         break;
                     }
@@ -429,38 +384,30 @@
             }
         }
         @try {
-            NSLog(@"RUN 131313 ====> ");
             [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:videoConnection completionHandler: ^(CMSampleBufferRef imageSampleBuffer, NSError *error)
              {
                 if ((CMSampleBufferIsValid(imageSampleBuffer) || (imageSampleBuffer != NULL))
                     && !error) {
-                    NSLog(@"RUN 141414 ====> ");
                     NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
                     
                     if (weakSelf.cameraViewType == IPDFCameraViewTypeBlackAndWhite || weakSelf.isBorderDetectionEnabled)
                     {
-                        NSLog(@"RUN 151515 ====> ");
-                        [activityIndicator stopAnimating];//to stop animating
                         CIImage *enhancedImage = [CIImage imageWithData:imageData];
                         
                         if (weakSelf.cameraViewType == IPDFCameraViewTypeBlackAndWhite)
                         {
-                            NSLog(@"RUN 181818 ====> ");
                             enhancedImage = [self filteredImageUsingEnhanceFilterOnImage:enhancedImage];
                         }
                         else
                         {
-                            NSLog(@"RUN 191919 ====> ");
                             enhancedImage = [self filteredImageUsingContrastFilterOnImage:enhancedImage];
                         }
                         
                         if (weakSelf.isBorderDetectionEnabled && rectangleDetectionConfidenceHighEnough(self->_imageDedectionConfidence))
                         {
-                            NSLog(@"RUN 202020 ====> ");
                             CIRectangleFeature *rectangleFeature = [self biggestRectangleInRectangles:[[self highAccuracyRectangleDetector] featuresInImage:enhancedImage]];
                             if (rectangleFeature)
                             {
-                                NSLog(@"RUN 212121 ====> ");
                                 enhancedImage = [self correctPerspectiveForImage:enhancedImage withFeatures:rectangleFeature];
                                 UIGraphicsBeginImageContext(CGSizeMake(enhancedImage.extent.size.height, enhancedImage.extent.size.width));
                                 
@@ -485,9 +432,7 @@
                                 CGImageRelease(capturedref);
                             }
                         } else {
-                            NSLog(@"RUN 171717 ====> ");
                             [weakSelf hideGLKView:NO completion:nil];
-                            [activityIndicator stopAnimating];//to stop animating
                             UIImage *initialImage = [UIImage imageWithData:imageData];
                             completionHandler(initialImage, initialImage, nil);
                         }
@@ -495,17 +440,13 @@
                     }
                     else
                     {
-                        NSLog(@"RUN 161616 ====> ");
                         [weakSelf hideGLKView:NO completion:nil];
-                        [activityIndicator stopAnimating];//to stop animating
                         UIImage *initialImage = [UIImage imageWithData:imageData];
                         completionHandler(initialImage, initialImage, nil);
                     }
                     self->_isCapturing = NO;
                 } else {
                     self->_isCapturing = NO;
-                    [activityIndicator stopAnimating];//to stop animating
-                    NSLog(@"RUN imageSampleBuffer nil ====> ");
                 }
             }];
         } @catch (NSException *exception) {
