@@ -150,7 +150,7 @@ public class ImageProcessor extends Handler {
         sd.originalSize = inputRgba.size();
         Quadrilateral quad = getQuadrilateral(contours, sd.originalSize);
 
-        double ratio = sd.originalSize.height / 500;
+        double ratio = sd.originalSize.height / 1000;
         sd.heightWithRatio = Double.valueOf(sd.originalSize.width / ratio).intValue();
         sd.widthWithRatio = Double.valueOf(sd.originalSize.height / ratio).intValue();
 
