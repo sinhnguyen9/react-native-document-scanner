@@ -412,9 +412,9 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
     }
 
     public Camera.Size getBestAspectPreviewSize(int displayOrientation,
-                                                       int width,
-                                                       int height,
-                                                       Camera.Parameters parameters) {
+                                                int width,
+                                                int height,
+                                                Camera.Parameters parameters) {
         double targetRatio = (double) width / height;
         Camera.Size optimalSize = null;
         double minDiff = Double.MAX_VALUE;
@@ -603,6 +603,7 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
 
     public void requestPicture() {
         PackageManager pm = mActivity.getPackageManager();
+        Log.d(TAG, "safeToTakePicture: " + safeToTakePicture);
         if (safeToTakePicture) {
 
             safeToTakePicture = false;
@@ -616,7 +617,10 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
                             if (success) {
                                 takePicture();
                             } else {
-                                onPictureFailed();
+                                Log.e(TAG, "onPictureFailed 111: ");
+                                // process take image when auto focus fail, using `onPictureFailed()` if you want return error msg
+                                takePicture();
+                                // onPictureFailed();
                             }
                         }
                     });
@@ -624,12 +628,14 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
                     takePicture();
                 }
             } catch (Exception e) {
+                Log.e(TAG, "onPictureFailed 2222: " + e.toString());
                 onPictureFailed();
             }
         }
     }
 
     private void takePicture() {
+        Log.d(TAG, "takePicture: 1212 " );
         mCamera.takePicture(null, null, pCallback);
         blinkScreen();
         blinkScreenAndShutterSound();
@@ -679,9 +685,7 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
             this.listener.onPictureTaken(data);
         }
 
-
         Log.d(TAG, "wrote: " + fileName);
-
 
         if (this.saveOnDevice) {
             // TODO: Change name addImageToGallery to saveOnDevice
@@ -689,7 +693,7 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
         }
 
         refreshCamera();
-
+        scannedDocument.release();
     }
 
     private List<Size> getResolutionList() {
@@ -729,7 +733,16 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
         mCamera.cancelAutoFocus();
         safeToTakePicture = true;
         waitSpinnerInvisible();
-
+        WritableMap data = new WritableNativeMap();
+        Log.e(TAG, "listener: " + this.listener);
+        if (this.listener != null) {
+            data.putInt("height", 0);
+            data.putInt("width", 0);
+            data.putString("croppedImage", "");
+            data.putString("initialImage", "");
+            data.putString("message", "Failed to take pictures and hold the phone in place for better photography");
+            this.listener.onPictureTaken(data);
+        }
     }
 
     public int parsedOverlayColor() {

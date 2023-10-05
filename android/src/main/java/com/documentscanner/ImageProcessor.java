@@ -94,7 +94,6 @@ public class ImageProcessor extends Handler {
     }
 
     private void processPreviewFrame(PreviewFrame previewFrame) {
-
         Mat frame = previewFrame.getFrame();
 
         boolean focused = mMainActivity.isFocused();
@@ -263,8 +262,8 @@ public class ImageProcessor extends Handler {
     private Quadrilateral getQuadrilateral(ArrayList<MatOfPoint> contours, Size srcSize) {
 
         double ratio = srcSize.height / 500;
-        int height = Double.valueOf(srcSize.height / ratio).intValue();
-        int width = Double.valueOf(srcSize.width / ratio).intValue();
+        int height = Double.valueOf(srcSize.height).intValue();
+        int width = Double.valueOf(srcSize.width).intValue();
         Size size = new Size(width, height);
 
         Log.i("COUCOU", "Size----->" + size);
